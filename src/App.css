@@ -77,7 +77,25 @@
 .stat span { font-size: 0.8rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
 .stat h2 { margin: 0; font-size: 1.6rem; font-weight: 800; }
 
-.stat.accent { background: #79e0f5; color: #004e64; border: none; }
+.stat.accent { 
+  /* A vibrant Emerald Green to represent profit/income */
+  background: #10b981; 
+  
+  /* Dark Forest Green text for high-contrast readability */
+  color: #064e3b; 
+  
+  border: none;
+  
+  /* Adds a subtle green glow to make the income card "pop" */
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2); 
+}
+
+/* This ensures the 'Total Income' label inside the green card is also readable */
+.stat.accent span {
+  color: #064e3b;
+  opacity: 0.9;
+  font-weight: 800;
+}
 
 .export-btn {
   background: #27ae60; color: white; border: none; border-radius: 20px;
