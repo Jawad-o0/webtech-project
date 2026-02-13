@@ -227,59 +227,73 @@ const IrshadStore = () => {
       {/* Restored Cool Modal */}
       {activeItem && (
         <div className="overlay">
-          <div className="cool-modal">
-            <div className="modal-accent"></div>
-            <div className="modal-head">
-              <span className="badge" style={{background: 'rgba(255,255,255,0.1)', color: '#00d4ff'}}>{activeItem.category.toUpperCase()}</span>
-              <h3>{activeItem.name}</h3>
-              <p>Rs. {activeItem.price}</p>
-            </div>
-            
-            <div className="modal-body">
-              {activeItem.category === 'fixed' ? (
-                <div className="pack-grid">
-                  {[1, 0.5, 0.25].map(v => (
-                    <button key={v} className={qty === v ? 'sel' : ''} onClick={() => setQty(v)}>
-                      {v === 1 ? '1.0 Unit' : `${v * 1000} Sub`}
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <div className="manual-input">
-                  <input 
-                    type="number" value={qty} 
-                    onChange={(e) => setQty(parseFloat(e.target.value) || 0)} 
-                    autoFocus 
-                  />
-                  
-                  {activeItem.category === 'loose' && (
-                    <div className="unit-toggle-container">
-                      <div className={`unit-slider ${['g', 'ml'].includes(unit) ? 'shift' : ''}`}></div>
-                      <button 
-                        className={`unit-btn ${['kg', 'L'].includes(unit) ? 'active' : ''}`}
-                        onClick={() => setUnit(activeItem.type === 'solid' ? 'kg' : 'L')}
-                      >
-                        {activeItem.type === 'solid' ? 'KG' : 'LITRE'}
-                      </button>
-                      <button 
-                        className={`unit-btn ${['g', 'ml'].includes(unit) ? 'active' : ''}`}
-                        onClick={() => setUnit(activeItem.type === 'solid' ? 'g' : 'ml')}
-                      >
-                        {activeItem.type === 'solid' ? 'GRAMS' : 'ML'}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+         <div className="cool-modal">
+  <div className="modal-accent"></div>
+  <div className="modal-head">
+    <span className="badge" style={{ background: 'rgba(255,255,255,0.1)', color: '#00d4ff' }}>
+      {activeItem.category.toUpperCase()}
+    </span>
+    <h3 style={{ fontSize: '28px', marginTop: '10px', marginBottom: '5px' }}>{activeItem.name}</h3>
+    {/* Prominent Price Display */}
+    <p style={{ fontSize: '1.2rem', color: '#00d4ff', fontWeight: '800' }}>
+      Rs. {activeItem.price}
+    </p>
+  </div>
 
-            <div className="modal-foot">
-              <button className="confirm-cool" onClick={saveSale}>
-                Confirm Amount: Rs. {calculateTotal(activeItem, qty, unit).toFixed(0)}
-              </button>
-              <button className="cancel-cool" onClick={() => setActiveItem(null)}>Go Back</button>
-            </div>
+  <div className="modal-body">
+    {activeItem.category === 'fixed' ? (
+      <div className="pack-grid">
+        {/* We use the .sel class here to match the new CSS vibe */}
+        {[1, 0.5, 0.25].map(v => (
+          <button 
+            key={v} 
+            className={qty === v ? 'sel' : ''} 
+            onClick={() => setQty(v)}
+          >
+            {v === 1 ? '1.0 Unit' : `${v * 1000} Sub`}
+          </button>
+        ))}
+      </div>
+    ) : (
+      <div className="manual-input">
+        <input 
+          type="number" 
+          value={qty} 
+          onChange={(e) => setQty(parseFloat(e.target.value) || 0)} 
+          autoFocus 
+        />
+        
+        {activeItem.category === 'loose' && (
+          <div className="unit-toggle-container">
+            <div className={`unit-slider ${['g', 'ml'].includes(unit) ? 'shift' : ''}`}></div>
+            <button 
+              className={`unit-btn ${['kg', 'L'].includes(unit) ? 'active' : ''}`}
+              onClick={() => setUnit(activeItem.type === 'solid' ? 'kg' : 'L')}
+            >
+              {activeItem.type === 'solid' ? 'KG' : 'LITRE'}
+            </button>
+            <button 
+              className={`unit-btn ${['g', 'ml'].includes(unit) ? 'active' : ''}`}
+              onClick={() => setUnit(activeItem.type === 'solid' ? 'g' : 'ml')}
+            >
+              {activeItem.type === 'solid' ? 'GRAMS' : 'ML'}
+            </button>
           </div>
+        )}
+      </div>
+    )}
+  </div>
+
+  <div className="modal-foot">
+    <button className="confirm-cool" onClick={saveSale}>
+      Confirm Amount: Rs. {calculateTotal(activeItem, qty, unit).toFixed(0)}
+    </button>
+    {/* Changed to button with cancel-cool class */}
+    <button className="cancel-cool" onClick={() => setActiveItem(null)}>
+      Go Back
+    </button>
+  </div>
+</div>
         </div>
       )}
     </div>
