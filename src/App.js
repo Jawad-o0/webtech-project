@@ -2,42 +2,42 @@ import React, { useState, useEffect, useMemo } from 'react';
 import './App.css';
 
 const INVENTORY = [
-  { id: 1, name: "Sugar (Cheeni)", price: 155, category: 'loose', type: 'solid', icon: '🍚' },
-  { id: 2, name: "Basmati Rice", price: 340, category: 'loose', type: 'solid', icon: '🌾' },
-  { id: 3, name: "Milk (Doodh)", price: 220, category: 'loose', type: 'liquid', icon: '🥛' },
-  { id: 4, name: "Red Chilli Powder", price: 1200, category: 'loose', type: 'solid', icon: '🌶️' },
-  { id: 5, name: "Daal Mash", price: 520, category: 'loose', type: 'solid', icon: '🥣' },
-  { id: 7, name: "Lipton Tea", price: 1650, category: 'fixed', type: 'solid', icon: '☕' },
-  { id: 8, name: "Tapal Danedar", price: 1580, category: 'fixed', type: 'solid', icon: '🍵' },
-  { id: 9, name: "Surf Excel 1kg", price: 680, category: 'fixed', type: 'solid', icon: '🧼' },
-  { id: 11, name: "Dalda Ghee", price: 610, category: 'fixed', type: 'liquid', icon: '🛢️' },
-  { id: 15, name: "Lux Soap", price: 125, category: 'count', icon: '🧼' },
-  { id: 18, name: "Farm Eggs", price: 35, category: 'count', icon: '🥚' },
-  { id: 19, name: "Dawn Bread (L)", price: 240, category: 'count', icon: '🍞' },
-  { id: 21, name: "Sooper Biscuit", price: 60, category: 'count', icon: '🍪' },
-  { id: 28, name: "Coca Cola 1.5L", price: 200, category: 'count', icon: '🥤' },
-  { id: 30, name: "Olpers 1L", price: 290, category: 'count', icon: '🥛' },
-  { id: 34, name: "Panadol Strip", price: 45, category: 'count', icon: '💊' },
-  { id: 35, name: "Cooking Oil", price: 580, category: 'loose', type: 'liquid', icon: '🍳' },
-  { id: 36, name: "Atta (Flour)", price: 140, category: 'loose', type: 'solid', icon: '🥖' },
-  { id: 37, name: "Salt (Namak)", price: 60, category: 'loose', type: 'solid', icon: '🧂' },
-  { id: 38, name: "Black Pepper", price: 300, category: 'loose', type: 'solid', icon: '⚫' },
-  { id: 39, name: "Yogurt", price: 220, category: 'loose', type: 'liquid', icon: '🍦' },
-  { id: 40, name: "Nido 1kg", price: 2450, category: 'fixed', type: 'solid', icon: '📦' },
-  { id: 41, name: "Milo Large", price: 1100, category: 'fixed', type: 'solid', icon: '🍫' },
-  { id: 42, name: "Tang Orange", price: 850, category: 'fixed', type: 'solid', icon: '🍊' },
-  { id: 43, name: "Dettol Liquid", price: 450, category: 'fixed', type: 'liquid', icon: '🩹' },
-  { id: 44, name: "Lifebuoy Soap", price: 110, category: 'count', icon: '🧼' },
-  { id: 45, name: "Colgate Toothpaste", price: 280, category: 'count', icon: '🪥' },
-  { id: 46, name: "Sunsilk Shampoo Sachet", price: 15, category: 'count', icon: '🧴'},
-  { id: 47, name: "Matchbox", price: 5, category: 'count', icon: '🔥' },
-  { id: 48, name: "Green Tea Bag", price: 25, category: 'count', icon: '🍃' },
-  { id: 49, name: "Snickers Bar", price: 180, category: 'count', icon: '🍫' },
-  { id: 50, name: "Mineral Water 1.5L", price: 90, category: 'count', icon: '💧' },
-  { id: 51, name: "Dishwash Bar", price: 85, category: 'count', icon: '🧽' },
-  { id: 52, name: "Garlic (Lehsan)", price: 400, category: 'loose', type: 'solid', icon: '🧄' },
-  { id: 53, name: "Ginger (Adrak)", price: 600, category: 'loose', type: 'solid', icon: '🥔' },
-  { id: 54, name: "Lays Chips", price: 50, category: 'count', icon: '🥔' }
+  { id: 1, name: "Sugar (Cheeni)", price: 155, category: 'loose', type: 'solid' },
+  { id: 2, name: "Basmati Rice", price: 340, category: 'loose', type: 'solid' },
+  { id: 3, name: "Milk (Doodh)", price: 220, category: 'loose', type: 'liquid' },
+  { id: 4, name: "Red Chilli Powder", price: 1200, category: 'loose', type: 'solid' },
+  { id: 5, name: "Daal Mash", price: 520, category: 'loose', type: 'solid' },
+  { id: 7, name: "Lipton Tea", price: 1650, category: 'fixed', type: 'solid' },
+  { id: 8, name: "Tapal Danedar", price: 1580, category: 'fixed', type: 'solid' },
+  { id: 9, name: "Surf Excel 1kg", price: 680, category: 'fixed', type: 'solid' },
+  { id: 11, name: "Dalda Ghee", price: 610, category: 'fixed', type: 'liquid' },
+  { id: 15, name: "Lux Soap", price: 125, category: 'count' },
+  { id: 18, name: "Farm Eggs", price: 35, category: 'count' },
+  { id: 19, name: "Dawn Bread (L)", price: 240, category: 'count' },
+  { id: 21, name: "Sooper Biscuit", price: 60, category: 'count' },
+  { id: 28, name: "Coca Cola 1.5L", price: 200, category: 'count' },
+  { id: 30, name: "Olpers 1L", price: 290, category: 'count' },
+  { id: 34, name: "Panadol Strip", price: 45, category: 'count' },
+  { id: 35, name: "Cooking Oil", price: 580, category: 'loose', type: 'liquid' },
+  { id: 36, name: "Atta (Flour)", price: 140, category: 'loose', type: 'solid' },
+  { id: 37, name: "Salt (Namak)", price: 60, category: 'loose', type: 'solid' },
+  { id: 38, name: "Black Pepper", price: 300, category: 'loose', type: 'solid' },
+  { id: 39, name: "Yogurt", price: 220, category: 'loose', type: 'liquid' },
+  { id: 40, name: "Nido 1kg", price: 2450, category: 'fixed', type: 'solid' },
+  { id: 41, name: "Milo Large", price: 1100, category: 'fixed', type: 'solid' },
+  { id: 42, name: "Tang Orange", price: 850, category: 'fixed', type: 'solid' },
+  { id: 43, name: "Dettol Liquid", price: 450, category: 'fixed', type: 'liquid' },
+  { id: 44, name: "Lifebuoy Soap", price: 110, category: 'count' },
+  { id: 45, name: "Colgate Toothpaste", price: 280, category: 'count' },
+  { id: 46, name: "Sunsilk Shampoo Sachet", price: 15, category: 'count'},
+  { id: 47, name: "Matchbox", price: 5, category: 'count' },
+  { id: 48, name: "Green Tea Bag", price: 25, category: 'count' },
+  { id: 49, name: "Snickers Bar", price: 180, category: 'count' },
+  { id: 50, name: "Mineral Water 1.5L", price: 90, category: 'count' },
+  { id: 51, name: "Dishwash Bar", price: 85, category: 'count' },
+  { id: 52, name: "Garlic (Lehsan)", price: 400, category: 'loose', type: 'solid' },
+  { id: 53, name: "Ginger (Adrak)", price: 600, category: 'loose', type: 'solid' },
+  { id: 54, name: "Lays Chips", price: 50, category: 'count' }
 ];
 
 const IrshadStore = () => {
@@ -82,7 +82,6 @@ const IrshadStore = () => {
   const openSaleModal = (item) => {
     setActiveItem(item);
     setQty(1);
-    // Set initial unit based on item type
     setUnit(item.category === 'count' ? 'pcs' : (item.type === 'solid' ? 'kg' : 'L'));
   };
 
@@ -95,7 +94,7 @@ const IrshadStore = () => {
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
     setSales([newSale, ...sales]);
-    setToast(`${activeItem.name} added!`);
+    setToast(`${activeItem.name} recorded`);
     setActiveItem(null);
   };
 
@@ -115,9 +114,8 @@ const IrshadStore = () => {
       {toast && (
         <div className="toast-popup">
           <div className="toast-content">
-            <span className="toast-icon">✨</span>
             <div className="toast-text">
-              <strong>Success!</strong>
+              <strong>Order Saved</strong>
               <p>{toast}</p>
             </div>
           </div>
@@ -129,14 +127,14 @@ const IrshadStore = () => {
         {page === 'shop' && (
           <div className="nav-search-container">
             <input 
-              type="text" className="search-input" placeholder="Search..." 
+              type="text" className="search-input" placeholder="Search by name..." 
               value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} 
             />
           </div>
         )}
         <div className="nav-btns">
-          <button className={page === 'shop' ? 'active' : ''} onClick={() => setPage('shop')}>Shop Items</button>
-          <button className={page === 'report' ? 'active' : ''} onClick={() => setPage('report')}>Daily Report</button>
+          <button className={page === 'shop' ? 'active' : ''} onClick={() => setPage('shop')}>POS Dashboard</button>
+          <button className={page === 'report' ? 'active' : ''} onClick={() => setPage('report')}>Daily Sales</button>
         </div>
       </nav>
 
@@ -157,9 +155,8 @@ const IrshadStore = () => {
             {filteredInventory.map(item => (
               <div key={item.id} className="item-card" onClick={() => openSaleModal(item)}>
                 <div className={`badge ${item.category}`}>{item.category}</div>
-                <span className="icon">{item.icon}</span>
-                <h4>{item.name}</h4>
-                <p>Rs. {item.price}</p>
+                <h4 style={{marginTop: '10px'}}>{item.name}</h4>
+                <p style={{color: '#00d4ff', fontWeight: 'bold'}}>Rs. {item.price}</p>
               </div>
             ))}
           </div>
@@ -167,21 +164,21 @@ const IrshadStore = () => {
       ) : (
         <section className="report-view">
           <div className="revenue-glass">
-            <div className="stat"><span>Items</span><h2>{sales.length}</h2></div>
-            <div className="stat accent"><span>Income</span><h2>+{sales.reduce((a,b)=>a+b.total,0).toLocaleString()} PKR</h2></div>
-            <button className="export-btn" onClick={exportCSV}>Export Report</button>
+            <div className="stat"><span>Total Transactions</span><h2>{sales.length}</h2></div>
+            <div className="stat accent"><span>Total Revenue</span><h2>+{sales.reduce((a,b)=>a+b.total,0).toLocaleString()} PKR</h2></div>
+            <button className="export-btn" onClick={exportCSV}>Download CSV</button>
           </div>
           <div className="table-glass">
             <table>
-              <thead><tr><th>Time</th><th>Item</th><th>Qty</th><th>Total</th><th>Action</th></tr></thead>
+              <thead><tr><th>Time</th><th>Item Name</th><th>Quantity</th><th>Total PKR</th><th>Action</th></tr></thead>
               <tbody>
                 {sales.map(s => (
                   <tr key={s.id}>
                     <td>{s.time}</td>
                     <td>{s.name}</td>
-                    <td>{s.qty}{s.unit}</td>
+                    <td>{s.qty} {s.unit}</td>
                     <td>Rs. {s.total.toFixed(0)}</td>
-                    <td><button className="delete-btn" onClick={() => setSales(sales.filter(i => i.id !== s.id))}>Remove🗑️</button></td>
+                    <td><button className="delete-btn" onClick={() => setSales(sales.filter(i => i.id !== s.id))}>VOID🗑️</button></td>
                   </tr>
                 ))}
               </tbody>
@@ -195,9 +192,9 @@ const IrshadStore = () => {
           <div className="cool-modal">
             <div className="modal-accent"></div>
             <div className="modal-head">
-              <span className="modal-emoji">{activeItem.icon}</span>
-              <h3>{activeItem.name}</h3>
-              <p>Price: Rs. {activeItem.price}</p>
+              <span className="badge" style={{background: 'rgba(255,255,255,0.1)', color: '#00d4ff'}}>{activeItem.category.toUpperCase()}</span>
+              <h3 style={{fontSize: '28px', marginTop: '10px'}}>{activeItem.name}</h3>
+              <p style={{opacity: 0.7}}>Base Price: Rs. {activeItem.price}</p>
             </div>
             
             <div className="modal-body">
@@ -205,7 +202,7 @@ const IrshadStore = () => {
                 <div className="pack-grid">
                   {[1, 0.5, 0.25].map(v => (
                     <button key={v} className={qty === v ? 'sel' : ''} onClick={() => setQty(v)}>
-                      {v === 1 ? '1 KG/L' : `${v * 1000} G/ML`}
+                      {v === 1 ? '1.0 Unit' : `${v * 1000} Sub-unit`}
                     </button>
                   ))}
                 </div>
@@ -223,13 +220,13 @@ const IrshadStore = () => {
                         className={`unit-btn ${['kg', 'L'].includes(unit) ? 'active' : ''}`}
                         onClick={() => setUnit(activeItem.type === 'solid' ? 'kg' : 'L')}
                       >
-                        {activeItem.type === 'solid' ? 'KG' : 'Litre'}
+                        {activeItem.type === 'solid' ? 'Kilogram' : 'Litre'}
                       </button>
                       <button 
                         className={`unit-btn ${['g', 'ml'].includes(unit) ? 'active' : ''}`}
                         onClick={() => setUnit(activeItem.type === 'solid' ? 'g' : 'ml')}
                       >
-                        {activeItem.type === 'solid' ? 'Grams' : 'ML'}
+                        {activeItem.type === 'solid' ? 'Grams' : 'Milliliter'}
                       </button>
                     </div>
                   )}
@@ -239,7 +236,7 @@ const IrshadStore = () => {
 
             <div className="modal-foot">
               <button className="confirm-cool" onClick={saveSale}>
-                Confirm Total: Rs. {calculateTotal(activeItem, qty, unit).toFixed(0)}
+                Confirm Amount: Rs. {calculateTotal(activeItem, qty, unit).toFixed(0)}
               </button>
               <button className="cancel-cool" onClick={() => setActiveItem(null)}>Go Back</button>
             </div>
