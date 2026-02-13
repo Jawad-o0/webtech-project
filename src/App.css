@@ -184,3 +184,60 @@ td { padding: 18px 20px; border-top: 1px solid rgba(255,255,255,0.05); font-weig
   animation: slide 0.4s ease; z-index: 3000;
 }
 @keyframes slide { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+/* --- FIXED ITEM UNIT BUTTONS --- */
+.pack-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.pack-grid button {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  padding: 12px 5px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.pack-grid button:hover {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.pack-grid button.sel {
+  background: var(--primary);
+  color: #000;
+  border-color: var(--primary);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+  font-weight: 800;
+}
+
+/* --- MODAL CANCEL/BACK BUTTON --- */
+.cancel-cool {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.cancel-cool:hover {
+  background: rgba(239, 68, 68, 0.1); /* Subtle red warning vibe */
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.4);
+}
