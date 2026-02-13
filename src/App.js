@@ -244,7 +244,7 @@ const IrshadStore = () => {
     {activeItem.category === 'fixed' ? (
       <div className="pack-grid">
         {/* We use the .sel class here to match the new CSS vibe */}
-        {[1, 500, 250].map(v => (
+        {[1, 0.5, 0.25].map(v => (
           <button 
             key={v} 
             className={qty === v ? 'sel' : ''} 
