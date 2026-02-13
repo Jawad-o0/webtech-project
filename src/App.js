@@ -49,15 +49,18 @@ const IrshadStore = () => {
   const [unit, setUnit] = useState('');
   const [toast, setToast] = useState(null);
 
+  // Load sales from LocalStorage
   const [sales, setSales] = useState(() => {
     const saved = localStorage.getItem('irshad_sales_data');
     return saved ? JSON.parse(saved) : [];
   });
 
+  // Save to LocalStorage
   useEffect(() => {
     localStorage.setItem('irshad_sales_data', JSON.stringify(sales));
   }, [sales]);
 
+  // Toast Timer
   useEffect(() => {
     if (toast) {
       const timer = setTimeout(() => setToast(null), 3000);
@@ -65,6 +68,23 @@ const IrshadStore = () => {
     }
   }, [toast]);
 
+  // --- ANALYTICS LOGIC ---
+  const DAILY_GOAL = 50000;
+  const totalRevenue = sales.reduce((acc, sale) => acc + sale.total, 0);
+  const progress = Math.min((totalRevenue / DAILY_GOAL) * 100, 100);
+
+  const getTopItem = () => {
+    if (sales.length === 0) return "No Sales";
+    const counts = sales.reduce((acc, s) => {
+      acc[s.name] = (acc[s.name] || 0) + 1;
+      return acc;
+    }, {});
+    return Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+  };
+
+  const avgSale = sales.length > 0 ? (totalRevenue / sales.length).toFixed(0) : 0;
+
+  // --- SEARCH & FILTER LOGIC ---
   const filteredInventory = useMemo(() => {
     return INVENTORY.filter(item => {
       const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -94,23 +114,25 @@ const IrshadStore = () => {
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
     setSales([newSale, ...sales]);
-    setToast(`${activeItem.name} recorded`);
+    setToast(`${activeItem.name} Recorded`);
     setActiveItem(null);
+    setSearchTerm(''); 
   };
 
   const exportCSV = () => {
-    const headers = "Time,Item,Qty,Unit,Total\n";
+    const headers = "Time,Item,Qty,Unit,Total(PKR)\n";
     const data = sales.map(s => `${s.time},${s.name},${s.qty},${s.unit},${s.total}`).join("\n");
     const blob = new Blob([headers + data], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `IrshadStore_Report.csv`;
+    link.download = `IrshadStore_Sales_${new Date().toLocaleDateString()}.csv`;
     link.click();
   };
 
   return (
     <div className="app-shell">
+      {/* Toast Popup */}
       {toast && (
         <div className="toast-popup">
           <div className="toast-content">
@@ -122,24 +144,26 @@ const IrshadStore = () => {
         </div>
       )}
 
+      {/* Glass Navigation */}
       <nav className="glass-nav">
         <h1 className="logo">Irshad<span>Store</span></h1>
         {page === 'shop' && (
           <div className="nav-search-container">
             <input 
-              type="text" className="search-input" placeholder="Search by name..." 
+              type="text" className="search-input" placeholder="Quick search..." 
               value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} 
             />
           </div>
         )}
         <div className="nav-btns">
-          <button className={page === 'shop' ? 'active' : ''} onClick={() => setPage('shop')}>POS Dashboard</button>
-          <button className={page === 'report' ? 'active' : ''} onClick={() => setPage('report')}>Daily Sales</button>
+          <button className={page === 'shop' ? 'active' : ''} onClick={() => setPage('shop')}>POS</button>
+          <button className={page === 'report' ? 'active' : ''} onClick={() => setPage('report')}>Report</button>
         </div>
       </nav>
 
       {page === 'shop' ? (
         <main>
+          {/* Filter Pills */}
           <div className="filter-pills">
             {['all', 'loose', 'fixed', 'count'].map(cat => (
               <button 
@@ -156,27 +180,40 @@ const IrshadStore = () => {
               <div key={item.id} className="item-card" onClick={() => openSaleModal(item)}>
                 <div className={`badge ${item.category}`}>{item.category}</div>
                 <h4 style={{marginTop: '10px'}}>{item.name}</h4>
-                <p style={{color: '#00d4ff', fontWeight: 'bold'}}>Rs. {item.price}</p>
+                <p style={{color: '#00d4ff', fontWeight: '800'}}>Rs. {item.price}</p>
               </div>
             ))}
           </div>
         </main>
       ) : (
         <section className="report-view">
-          <div className="revenue-glass">
-            <div className="stat"><span>Total Transactions</span><h2>{sales.length}</h2></div>
-            <div className="stat accent"><span>Total Revenue</span><h2>+{sales.reduce((a,b)=>a+b.total,0).toLocaleString()} PKR</h2></div>
-            <button className="export-btn" onClick={exportCSV}>Download CSV</button>
+          {/* Daily Performance Section */}
+          <div className="performance-card">
+            <div className="goal-info">
+              <span>Target: {DAILY_GOAL.toLocaleString()} PKR</span>
+              <span style={{color: '#00d4ff', fontWeight: 'bold'}}>{progress.toFixed(0)}%</span>
+            </div>
+            <div className="progress-container">
+              <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+            </div>
           </div>
+
+          <div className="revenue-glass">
+            <div className="stat"><span>Top Item</span><h2 style={{fontSize:'1rem', color:'#00d4ff'}}>{getTopItem()}</h2></div>
+            <div className="stat"><span>Avg Order</span><h2>{avgSale}</h2></div>
+            <div className="stat accent"><span>Income</span><h2>{totalRevenue.toLocaleString()}</h2></div>
+            <button className="export-btn" onClick={exportCSV}>CSV</button>
+          </div>
+          
           <div className="table-glass">
             <table>
-              <thead><tr><th>Time</th><th>Item Name</th><th>Quantity</th><th>Total PKR</th><th>Action</th></tr></thead>
+              <thead><tr><th>Time</th><th>Item</th><th>Qty</th><th>Total</th><th>Action</th></tr></thead>
               <tbody>
                 {sales.map(s => (
                   <tr key={s.id}>
                     <td>{s.time}</td>
                     <td>{s.name}</td>
-                    <td>{s.qty} {s.unit}</td>
+                    <td>{s.qty}{s.unit}</td>
                     <td>Rs. {s.total.toFixed(0)}</td>
                     <td><button className="delete-btn" onClick={() => setSales(sales.filter(i => i.id !== s.id))}>VOID🗑️</button></td>
                   </tr>
@@ -187,14 +224,15 @@ const IrshadStore = () => {
         </section>
       )}
 
+      {/* Restored Cool Modal */}
       {activeItem && (
         <div className="overlay">
           <div className="cool-modal">
             <div className="modal-accent"></div>
             <div className="modal-head">
               <span className="badge" style={{background: 'rgba(255,255,255,0.1)', color: '#00d4ff'}}>{activeItem.category.toUpperCase()}</span>
-              <h3 style={{fontSize: '28px', marginTop: '10px'}}>{activeItem.name}</h3>
-              <p style={{opacity: 0.7}}>Base Price: Rs. {activeItem.price}</p>
+              <h3>{activeItem.name}</h3>
+              <p>Rs. {activeItem.price}</p>
             </div>
             
             <div className="modal-body">
@@ -202,7 +240,7 @@ const IrshadStore = () => {
                 <div className="pack-grid">
                   {[1, 0.5, 0.25].map(v => (
                     <button key={v} className={qty === v ? 'sel' : ''} onClick={() => setQty(v)}>
-                      {v === 1 ? '1.0 Unit' : `${v * 1000} Sub-unit`}
+                      {v === 1 ? '1.0 Unit' : `${v * 1000} Sub`}
                     </button>
                   ))}
                 </div>
@@ -210,7 +248,8 @@ const IrshadStore = () => {
                 <div className="manual-input">
                   <input 
                     type="number" value={qty} 
-                    onChange={(e) => setQty(e.target.value)} autoFocus 
+                    onChange={(e) => setQty(parseFloat(e.target.value) || 0)} 
+                    autoFocus 
                   />
                   
                   {activeItem.category === 'loose' && (
@@ -220,13 +259,13 @@ const IrshadStore = () => {
                         className={`unit-btn ${['kg', 'L'].includes(unit) ? 'active' : ''}`}
                         onClick={() => setUnit(activeItem.type === 'solid' ? 'kg' : 'L')}
                       >
-                        {activeItem.type === 'solid' ? 'Kilogram' : 'Litre'}
+                        {activeItem.type === 'solid' ? 'KG' : 'LITRE'}
                       </button>
                       <button 
                         className={`unit-btn ${['g', 'ml'].includes(unit) ? 'active' : ''}`}
                         onClick={() => setUnit(activeItem.type === 'solid' ? 'g' : 'ml')}
                       >
-                        {activeItem.type === 'solid' ? 'Grams' : 'Milliliter'}
+                        {activeItem.type === 'solid' ? 'GRAMS' : 'ML'}
                       </button>
                     </div>
                   )}
