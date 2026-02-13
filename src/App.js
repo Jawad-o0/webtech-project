@@ -201,7 +201,7 @@ const IrshadStore = () => {
           <div className="revenue-glass">
             <div className="stat"><span>Top Item</span><h2 style={{fontSize:'1rem', color:'#00d4ff'}}>{getTopItem()}</h2></div>
             <div className="stat"><span>Avg Order</span><h2>{avgSale}</h2></div>
-            <div className="stat accent"><span>Income</span><h2>{totalRevenue.toLocaleString()}</h2></div>
+            <div className="stat accent"><span>Total Income</span><h2>+{totalRevenue.toLocaleString()}</h2></div>
             <button className="export-btn" onClick={exportCSV}>CSV</button>
           </div>
           
