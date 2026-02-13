@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './App.css';
 
 const INVENTORY = [
-  // --- ORIGINAL ITEMS ---
   { id: 1, name: "Sugar (Cheeni)", price: 155, category: 'loose', type: 'solid' },
   { id: 2, name: "Basmati Rice", price: 340, category: 'loose', type: 'solid' },
   { id: 3, name: "Milk (Doodh)", price: 220, category: 'loose', type: 'liquid' },
@@ -43,11 +42,23 @@ const INVENTORY = [
 
 const IrshadStore = () => {
   const [page, setPage] = useState('shop');
-  const [sales, setSales] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeFilter, setActiveFilter] = useState('all');
   const [activeItem, setActiveItem] = useState(null);
   const [qty, setQty] = useState(1);
   const [unit, setUnit] = useState('');
-  const [toast, setToast] = useState(null); // Changed to store message
+  const [toast, setToast] = useState(null);
+
+  // Load sales from LocalStorage
+  const [sales, setSales] = useState(() => {
+    const saved = localStorage.getItem('irshad_sales_data');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Persist sales to LocalStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('irshad_sales_data', JSON.stringify(sales));
+  }, [sales]);
 
   useEffect(() => {
     if (toast) {
@@ -56,7 +67,17 @@ const IrshadStore = () => {
     }
   }, [toast]);
 
+  // Combined Filtering Logic (Search + Category)
+  const filteredInventory = useMemo(() => {
+    return INVENTORY.filter(item => {
+      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = activeFilter === 'all' || item.category === activeFilter;
+      return matchesSearch && matchesCategory;
+    });
+  }, [searchTerm, activeFilter]);
+
   const calculateTotal = (item, q, u) => {
+    if (!item) return 0;
     if (item.category === 'fixed' || item.category === 'count') return item.price * q;
     return (u === 'g' || u === 'ml') ? (item.price / 1000) * q : item.price * q;
   };
@@ -69,113 +90,101 @@ const IrshadStore = () => {
 
   const saveSale = () => {
     const total = calculateTotal(activeItem, qty, unit);
-    setSales([{
+    const newSale = {
       id: Date.now(),
       name: activeItem.name,
       qty, unit, total,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    }, ...sales]);
-    setToast(`${activeItem.name} added!`);
+    };
+    setSales([newSale, ...sales]);
+    setToast(`${activeItem.name} Added!`);
     setActiveItem(null);
+    setSearchTerm(''); // Reset search after adding
   };
 
-  const deleteItem = (id) => {
-    setSales(sales.filter(item => item.id !== id));
+  const exportCSV = () => {
+    const headers = "Time,Item,Qty,Unit,Total(PKR)\n";
+    const data = sales.map(s => `${s.time},${s.name},${s.qty},${s.unit},${s.total}`).join("\n");
+    const blob = new Blob([headers + data], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `IrshadStore_Report_${new Date().toLocaleDateString()}.csv`;
+    link.click();
   };
 
   const totalRevenue = sales.reduce((acc, sale) => acc + sale.total, 0);
 
   return (
     <div className="app-shell">
+      {/* Toast Notification */}
       {toast && (
         <div className="toast-popup">
           <div className="toast-content">
             <span className="toast-icon">✨</span>
             <div className="toast-text">
-              <strong>Success!</strong>
+              <strong>Order Saved</strong>
               <p>{toast}</p>
             </div>
           </div>
         </div>
       )}
 
+      {/* Glass Navigation */}
       <nav className="glass-nav">
         <h1 className="logo">Irshad<span>Store</span></h1>
+        
+        {page === 'shop' && (
+          <div className="nav-search-container">
+            <input 
+              type="text" 
+              className="search-input" 
+              placeholder="Quick search products..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        )}
+
         <div className="nav-btns">
-          <button className={page === 'shop' ? 'active' : ''} onClick={() => setPage('shop')}>Shop Items</button>
-          <button className={page === 'report' ? 'active' : ''} onClick={() => setPage('report')}>Daily Report</button>
+          <button className={page === 'shop' ? 'active' : ''} onClick={() => setPage('shop')}>POS</button>
+          <button className={page === 'report' ? 'active' : ''} onClick={() => setPage('report')}>Report</button>
         </div>
       </nav>
 
       {page === 'shop' ? (
-        <main className="store-grid">
-          {INVENTORY.map(item => (
-            <div key={item.id} className="item-card" onClick={() => openSaleModal(item)}>
-              <div className={`badge ${item.category}`}>{item.category}</div>
-              <span className="icon">{item.icon}</span>
-              <h4>{item.name}</h4>
-              <p>Rs. {item.price}</p>
-            </div>
-          ))}
+        <main className="store-container">
+          {/* Filter Pills */}
+          <div className="filter-pills">
+            {['all', 'loose', 'fixed', 'count'].map(cat => (
+              <button 
+                key={cat} 
+                className={`pill-btn ${activeFilter === cat ? 'active' : ''}`}
+                onClick={() => setActiveFilter(cat)}
+              >
+                {cat.toUpperCase()}
+              </button>
+            ))}
+          </div>
 
-          {activeItem && (
-            <div className="overlay">
-              <div className="cool-modal">
-                <div className="modal-accent"></div>
-                <div className="modal-head">
-                  <span className="modal-emoji">{activeItem.icon}</span>
-                  <h3>{activeItem.name}</h3>
-                  <p>Current Price: Rs. {activeItem.price}</p>
-                </div>
-                <div className="modal-body">
-                  {activeItem.category === 'fixed' ? (
-                    <div className="pack-grid">
-                      {[1, 0.5, 0.25].map(v => (
-                        <button key={v} className={qty === v ? 'sel' : ''} onClick={() => setQty(v)}>
-                          {v === 1 ? '1 KG/L' : `${v * 1000} G/ML`}
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="manual-input">
-  <input type="number" value={qty} onChange={(e) => setQty(e.target.value)} autoFocus />
-  
-                    {activeItem.category === 'loose' && (
-                      <div className="unit-toggle-container">
-                        <div className={`unit-slider ${unit === 'g' || unit === 'ml' ? 'shift' : ''}`}></div>
-                        <button 
-                          className={`unit-btn ${unit === 'kg' || unit === 'L' ? 'active' : ''}`} 
-                          onClick={() => setUnit(activeItem.type === 'solid' ? 'kg' : 'L')}
-                        >
-                          {activeItem.type === 'solid' ? 'KG' : 'Litre'}
-                        </button>
-                        <button 
-                          className={`unit-btn ${unit === 'g' || unit === 'ml' ? 'active' : ''}`} 
-                          onClick={() => setUnit(activeItem.type === 'solid' ? 'g' : 'ml')}
-                        >
-                          {activeItem.type === 'solid' ? 'Grams' : 'ML'}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  )}
-                </div>
-                <div className="modal-foot">
-                  <button className="confirm-cool" onClick={saveSale}>
-                    Confirm Total: Rs. {calculateTotal(activeItem, qty, unit).toFixed(0)}
-                  </button>
-                  <button className="cancel-cool" onClick={() => setActiveItem(null)}>Go Back</button>
-                </div>
+          <div className="store-grid">
+            {filteredInventory.map(item => (
+              <div key={item.id} className="item-card" onClick={() => openSaleModal(item)}>
+                <div className={`badge ${item.category}`}>{item.category}</div>
+                <h4>{item.name}</h4>
+                <p>Rs. {item.price}</p>
               </div>
-            </div>
-          )}
+            ))}
+          </div>
         </main>
       ) : (
         <section className="report-view">
           <div className="revenue-glass">
-            <div className="stat"><span>Total Items</span><h2>{sales.length}</h2></div>
-            <div className="stat accent"><span>Total Income</span><h2>+{totalRevenue.toLocaleString()} PKR</h2></div>
+            <div className="stat"><span>Sales Count</span><h2>{sales.length}</h2></div>
+            <div className="stat accent"><span>Total Cash</span><h2>PKR {totalRevenue.toLocaleString()}</h2></div>
+            <button className="export-btn" onClick={exportCSV}>Export CSV</button>
           </div>
+          
           <div className="table-glass">
             <table>
               <thead><tr><th>Time</th><th>Item</th><th>Qty</th><th>Total</th><th>Action</th></tr></thead>
@@ -186,13 +195,68 @@ const IrshadStore = () => {
                     <td>{s.name}</td>
                     <td>{s.qty}{s.unit}</td>
                     <td>Rs. {s.total.toFixed(0)}</td>
-                    <td><button className="delete-btn" onClick={() => deleteItem(s.id)}>Remove🗑️</button></td>
+                    <td><button className="delete-btn" onClick={() => setSales(sales.filter(i => i.id !== s.id))}>Void🗑️</button></td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </section>
+      )}
+
+      {/* Sale Modal */}
+      {activeItem && (
+        <div className="overlay">
+          <div className="cool-modal">
+            <div className="modal-accent"></div>
+            <div className="modal-head">
+              <h3>{activeItem.name}</h3>
+              <p>Current Price: Rs. {activeItem.price}</p>
+            </div>
+            <div className="modal-body">
+              {activeItem.category === 'fixed' ? (
+                <div className="pack-grid">
+                  {[1, 0.5, 0.25].map(v => (
+                    <button key={v} className={qty === v ? 'sel' : ''} onClick={() => setQty(v)}>
+                      {v === 1 ? 'Full Pack' : `${v * 1000} G/ML`}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="manual-entry">
+                  <input 
+                    type="number" 
+                    value={qty} 
+                    onChange={(e) => setQty(parseFloat(e.target.value) || 0)} 
+                    autoFocus 
+                  />
+                  {activeItem.category === 'loose' && (
+                    <div className="unit-toggle-group">
+                      <button 
+                        className={unit === 'kg' || unit === 'L' ? 'active' : ''} 
+                        onClick={() => setUnit(activeItem.type === 'solid' ? 'kg' : 'L')}
+                      >
+                        {activeItem.type === 'solid' ? 'KG' : 'Litre'}
+                      </button>
+                      <button 
+                        className={unit === 'g' || unit === 'ml' ? 'active' : ''} 
+                        onClick={() => setUnit(activeItem.type === 'solid' ? 'g' : 'ml')}
+                      >
+                        {activeItem.type === 'solid' ? 'Grams' : 'ML'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="modal-foot">
+              <button className="confirm-cool" onClick={saveSale}>
+                Save Sale: Rs. {calculateTotal(activeItem, qty, unit).toFixed(0)}
+              </button>
+              <button className="cancel-cool" onClick={() => setActiveItem(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
