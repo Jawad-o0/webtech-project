@@ -2,7 +2,7 @@
 
 A high-performance, professional **Point of Sale (POS)** and **Sales Analytics** dashboard. This application is designed to streamline retail operations with a focus on speed, data persistence, and a premium "Deep Blue" aesthetic.
 
-### 🔗 [Live Demo on Vercel](https://your-vercel-link-here.vercel.app)
+### 🔗 [Live Demo on Vercel]( https://webtech-project-rho.vercel.app/ )
 
 ---
 
